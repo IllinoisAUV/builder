@@ -29,3 +29,7 @@ RUN bash -c "source /opt/ros/kinetic/setup.bash; cd catkin_ws; catkin_make"
 # Source ROS setup files
 RUN echo "source /opt/ros/kinetic/setup.bash" >> ~/.bashrc
 RUN echo "source /catkin_ws/devel/setup.bash" >> ~/.bashrc
+
+WORKDIR /catkin_ws
+VOLUME ["/catkin_ws"]
+CMD ["bash", "-i", "-c", "catkin_make"]
