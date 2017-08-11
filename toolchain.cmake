@@ -8,7 +8,6 @@ SET(CMAKE_CXX_COMPILER aarch64-linux-gnu-g++)
 
 # where is the target environment 
 SET(CMAKE_FIND_ROOT_PATH  /usr/aarch64-linux-gnu)
-SET(ARM_LINUX_SYSROOT /usr/aarch64-linux-gnu CACHE PATH "ARM cross compilation system root")
 
 # search for programs in the build host directories
 SET(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
