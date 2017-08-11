@@ -3,12 +3,12 @@ SET(CMAKE_SYSTEM_VERSION 1)
 set(CMAKE_SYSTEM_PROCESSOR arm)
 
 # specify the cross compiler
-SET(CMAKE_C_COMPILER   arm-linux-gnueabihf-gcc)
-SET(CMAKE_CXX_COMPILER arm-linux-gnueabihf-g++)
+SET(CMAKE_C_COMPILER   aarch64-linux-gnu-gcc)
+SET(CMAKE_CXX_COMPILER aarch64-linux-gnu-g++)
 
 # where is the target environment 
-SET(CMAKE_FIND_ROOT_PATH  /opt/eldk-2007-01-19/ppc_74xx /home/alex/eldk-ppc74xx-inst)
-SET(ARM_LINUX_SYSROOT /usr/arm-linux-gnueabihf CACHE PATH "ARM cross compilation system root")
+SET(CMAKE_FIND_ROOT_PATH  /usr/aarch64-linux-gnu)
+SET(ARM_LINUX_SYSROOT /usr/aarch64-linux-gnu CACHE PATH "ARM cross compilation system root")
 
 # search for programs in the build host directories
 SET(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
