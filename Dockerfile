@@ -78,7 +78,7 @@ RUN cd /tmp/boost_1_58_0 && ./bootstrap.sh toolset=gcc-arm --without-libraries=p
 # -q makes it fail completely on first failure, so that they don't get lost in all the logging
 # The toolset is as specified in user-config.jam, which should be placed in the user's home directory
 # architecture, abi, and address-model are required for boost to correctly detect the architecture and build
-RUN cd /tmp/boost_1_58_0 && ./bjam -q toolset=gcc-arm architecture=arm abi=aapcs address-model=64 -j40 --prefix=/usr/aarch64-linux-gnu install
+RUN cd /tmp/boost_1_58_0 && ./bjam -q toolset=gcc-arm architecture=arm abi=aapcs address-model=64 -j4 --prefix=/usr/aarch64-linux-gnu install
 
 # Install zlib from deb
 RUN wget -O /tmp/zlib1g.deb http://ftp.us.debian.org/debian/pool/main/z/zlib/zlib1g_1.2.8.dfsg-2+b1_arm64.deb
@@ -110,7 +110,7 @@ RUN rosdep update
 RUN mkdir /ros_catkin_ws
 # List dependencies here
 RUN cd /ros_catkin_ws && rosinstall_generator ros_comm sensor_msgs geometry_msgs nav_msgs mavros_msgs tf2_ros visualization_msgs --rosdistro kinetic --deps --wet-only --tar > kinetic-ros_comm-wet.rosinstall
-RUN cd /ros_catkin_ws && wstool init -j40 src kinetic-ros_comm-wet.rosinstall
+RUN cd /ros_catkin_ws && wstool init -j4 src kinetic-ros_comm-wet.rosinstall
 RUN cd /ros_catkin_ws && ./src/catkin/bin/catkin_make_isolated --install --install-space /opt/ros/kinetic -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=/toolchain.cmake
 
 # Source ROS setup files
