@@ -103,13 +103,20 @@ RUN mkdir /tmp/liblz4-dev
 RUN dpkg-deb -R /tmp/liblz4-dev.deb /tmp/liblz4-dev
 RUN rsync -ah /tmp/liblz4-dev/usr/ /usr/aarch64-linux-gnu
 
+# Install googletest - required for tf2
+RUN wget -O /tmp/google-test.tar.gz https://github.com/google/googletest/archive/release-1.8.0.tar.gz
+RUN mkdir /tmp/google-test
+RUN tar -xf /tmp/google-test.tar.gz -C /tmp/google-test
+RUN cd /tmp/google-test/googletest-release-1.8.0; cmake -DCMAKE_INSTALL_PREFIX=/usr/aarch64-linux-gnu -DBUILD_SHARED_LIBS=ON -DCMAKE_TOOLCHAIN_FILE=/toolchain.cmake .
+RUN cd /tmp/google-test/googletest-release-1.8.0; make -j4
+RUN cd /tmp/google-test/googletest-release-1.8.0; make install
 
 # Build and install ROS
 RUN rosdep init
 RUN rosdep update
 RUN mkdir /ros_catkin_ws
 # List dependencies here
-RUN cd /ros_catkin_ws && rosinstall_generator ros_comm sensor_msgs geometry_msgs nav_msgs mavros_msgs tf2_ros visualization_msgs --rosdistro kinetic --deps --wet-only --tar > kinetic-ros_comm-wet.rosinstall
+RUN cd /ros_catkin_ws && rosinstall_generator ros_comm sensor_msgs geometry_msgs nav_msgs mavros_msgs visualization_msgs tf2 --rosdistro kinetic --deps --wet-only --tar > kinetic-ros_comm-wet.rosinstall
 RUN cd /ros_catkin_ws && wstool init -j4 src kinetic-ros_comm-wet.rosinstall
 RUN cd /ros_catkin_ws && ./src/catkin/bin/catkin_make_isolated --install --install-space /opt/ros/kinetic -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=/toolchain.cmake
 
@@ -119,5 +126,5 @@ RUN echo "source /catkin_ws/devel/setup.bash" >> ~/.bashrc
 
 
 WORKDIR /catkin_ws
-VOLUME ["/catkin_ws", "/boost"]
-CMD ["bash", "-i", "-c", "catkin_make", "-DCMAKE_TOOLCHAIN_FILE=/toolchain.cmake"]
+VOLUME ["/catkin_ws"]
+CMD ["bash", "-i", "-c", "catkin_make -DCMAKE_TOOLCHAIN_FILE=/toolchain.cmake"]
