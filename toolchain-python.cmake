@@ -7,10 +7,13 @@ SET(CMAKE_C_COMPILER   aarch64-linux-gnu-gcc)
 SET(CMAKE_CXX_COMPILER aarch64-linux-gnu-g++)
 
 # where is the target environment 
-SET(CMAKE_FIND_ROOT_PATH $ENV{SYSROOT} /usr/local/cuda /opt/ros/kinetic /)
+SET(CMAKE_FIND_ROOT_PATH $ENV{SYSROOT} /usr/local/cuda /opt/ros/kinetic)
 
 # SET(CMAKE_IGNORE_PATH /usr/lib)
 # SET(CMAKE_LIBRARY_PATH /usr/aarch64-linux-gnu)
+# SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --sysroot=$ENV{SYSROOT}" CACHE STRING "cache it")
+# SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} --sysroot=$ENV{SYSROOT}" CACHE STRING "cache it")
+# SET(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} --sysroot=$ENV{SYSROOT}" CACHE STRING "cache it")
 
 # search for programs in the build host directories
 SET(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
@@ -26,7 +29,9 @@ SET(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)
 
 # SET(TinyXML_ROOT_DIR $ENV{SYSROOT}/usr)
 # SET(TinyXML_INCLUDE_PATH $ENV{SYSROOT}/usr/include)
-# SET(TinyXML_LIBRARIES $ENV{SYSROOT}/usr/lib/aarch64-linux-gnu/libtinyxml.so)
+# SET(TinyXML_LIBRARY $ENV{SYSROOT}/usr/lib/aarch64-linux-gnu/libtinyxml.so)
+
+# SET(CMAKE_CXX_FLAGS "-Wl,-v")
 
 # SET(CMAKE_LIBRARY_PATH /usr/arm-linux-gnueabihf /usr/local/cuda /opt/ros/kinetic)
 # set(CUDA_TOOLKIT_ROOT "/usr/local/cuda" CACHE STRING "" FORCE)

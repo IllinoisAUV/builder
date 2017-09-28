@@ -1,1 +1,18 @@
-using gcc : arm : aarch64-linux-gnu-g++ ;
+import os ;
+local SYSROOT = [ os.environ SYSROOT ] ;
+
+using gcc 
+: arm
+: aarch64-linux-gnu-gcc
+# : <compileflags>--sysroot=$SYSROOT
+  # <linkflags>--sysroot=$SYSROOT
+;
+
+using python
+: 2.7
+: /usr/bin/python2.7
+: $(SYSROOT)/usr/include/python2.7  # includes
+: $(SYSROOT)/usr/lib/python2.7 # libraries
+: <toolset>gcc-arm # condition
+;
+
