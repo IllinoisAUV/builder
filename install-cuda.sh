@@ -22,7 +22,7 @@ set -e
 
 
 # Install cuda 8
-apt install -y cuda-minimal-build-8-0:amd64 cuda-cublas-cross-aarch64-8-0:arm64 cuda-cudart-cross-aarch64-8-0:arm64 cuda-cufft-cross-aarch64-8-0:arm64 cuda-curand-cross-aarch64-8-0:arm64 cuda-cusolver-cross-aarch64-8-0:arm64 cuda-cusparse-cross-aarch64-8-0:arm64 cuda-driver-cross-aarch64-8-0:arm64 cuda-misc-headers-cross-aarch64-8-0:arm64 cuda-npp-cross-aarch64-8-0:arm64 cuda-nvrtc-cross-aarch64-8-0:arm64
+apt install -y cuda-cross-aarch64-8-0 # cuda-minimal-build-8-0:amd64 cuda-cublas-cross-aarch64-8-0:arm64 cuda-cudart-cross-aarch64-8-0:arm64 cuda-cufft-cross-aarch64-8-0:arm64 cuda-curand-cross-aarch64-8-0:arm64 cuda-cusolver-cross-aarch64-8-0:arm64 cuda-cusparse-cross-aarch64-8-0:arm64 cuda-driver-cross-aarch64-8-0:arm64 cuda-misc-headers-cross-aarch64-8-0:arm64 cuda-npp-cross-aarch64-8-0:arm64 cuda-nvrtc-cross-aarch64-8-0:arm64
 
 
 cd /usr/local; ln -s ./cuda-7.0 ./cuda

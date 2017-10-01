@@ -1,11 +1,12 @@
 import os ;
 local SYSROOT = [ os.environ SYSROOT ] ;
+local TRIPLET = [ os.environ TRIPLET ] ;
 
 using gcc 
 : arm
-: aarch64-linux-gnu-gcc
+: $(TRIPLET)-gcc
 # : <compileflags>--sysroot=$SYSROOT
-  # <linkflags>--sysroot=$SYSROOT
+# <linkflags>--sysroot=$SYSROOT
 ;
 
 using python

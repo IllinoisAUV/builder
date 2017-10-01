@@ -11,9 +11,9 @@ cd /tmp/boost_1_58_0/tools/build
 
 
 cd /tmp/boost_1_58_0
-./bootstrap.sh toolset=gcc-arm --prefix=${SYSROOT}
+./bootstrap.sh toolset=gcc-arm --prefix=${SYSROOT}/usr
 sed -i 's/using python.*//g' /tmp/boost_1_58_0/project-config.jam
-./bjam -q --no-samples --no-tests target-os=linux toolset=gcc-arm architecture=arm abi=aapcs address-model=64 -j4 --prefix=$SYSROOT --debug-configuration install
+./bjam -q --no-samples --no-tests target-os=linux toolset=gcc-arm architecture=arm abi=aapcs address-model=64 -j4 --prefix=$SYSROOT/usr --debug-configuration install
 
 cd /
 rm -rf /tmp/*

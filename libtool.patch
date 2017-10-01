@@ -1,0 +1,11 @@
+--- libtool.orig	2017-10-01 09:13:26.088290337 -0500
++++ libtool	2017-10-01 09:16:29.235470932 -0500
+@@ -8655,7 +8655,7 @@
+ 	  *)
+ 	    if test no = "$installed"; then
+ 	      func_append notinst_deplibs " $lib"
+-	      need_relink=yes
++	      need_relink=no
+ 	    fi
+ 	    ;;
+ 	  esac

@@ -3,8 +3,8 @@ SET(CMAKE_SYSTEM_VERSION 1)
 set(CMAKE_SYSTEM_PROCESSOR arm)
 
 # specify the cross compiler
-SET(CMAKE_C_COMPILER   aarch64-linux-gnu-gcc)
-SET(CMAKE_CXX_COMPILER aarch64-linux-gnu-g++)
+SET(CMAKE_C_COMPILER   $ENV{TRIPLET}-gcc)
+SET(CMAKE_CXX_COMPILER $ENV{TRIPLET}-g++)
 
 # where is the target environment 
 SET(CMAKE_FIND_ROOT_PATH $ENV{SYSROOT} /usr/local/cuda /opt/ros/kinetic)

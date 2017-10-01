@@ -26,10 +26,10 @@ patch tinyxml.h /enforce-use-stl.patch
 make
 $CXX -shared -olibtinyxml.so.0.1 -Wl,-soname,libtinyxml.so.0 $(ls *.o | grep -v xmltest)
 
-mv libtinyxml.so.0.1 $SYSROOT/lib
-mv tinyxml.h $SYSROOT/include
+mv libtinyxml.so.0.1 $SYSROOT/usr/lib
+mv tinyxml.h $SYSROOT/usr/include
 
-cd $SYSROOT/lib && ln -s libtinyxml.so.0.1 libtinyxml.so
+cd $SYSROOT/usr/lib && ln -s libtinyxml.so.0.1 libtinyxml.so
 
 
 cd /

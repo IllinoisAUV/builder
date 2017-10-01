@@ -8,7 +8,7 @@ cd /tmp/libexpat-R_2_2_4/expat
 
 mkdir build
 cd build
-cmake .. -DCMAKE_TOOLCHAIN_FILE=/toolchain.cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$SYSROOT -DBUILD_tests=OFF
+cmake .. -DCMAKE_TOOLCHAIN_FILE=/toolchain.cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$SYSROOT/usr -DBUILD_tests=OFF
 make -j$(nproc)
 make install
 

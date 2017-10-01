@@ -32,7 +32,7 @@ cd /tmp/qt-everywhere-opensource-src-5.9.0
 -release \
 --confirm-license \
 -device linux-jetson-tx1-g++ \
--device-option CROSS_COMPILE=aarch64-linux-gnu- \
+-device-option CROSS_COMPILE=${TRIPLET}- \
 -sysroot $SYSROOT \
 -no-tslib \
 -no-sql-sqlite \

@@ -36,15 +36,12 @@ mv Parser/pgen Parser/hostpgen
 #     ac_cv_have_long_long_format=yes \
 #     PYTHON_FOR_BUILD=${PWD}/hostpython
 
-export TRIPLET=aarch64-linux-gnu
-
-CROSS_COMPILE=aarch64-linux-gnu-
+CROSS_COMPILE=${TRIPLET}-
 ./configure \
     --host=$TRIPLET \
     --build=$MACHTYPE \
     --target=$TRIPLET \
     --prefix=$SYSROOT/usr \
-    --enable-optimizations \
     --disable-ipv6 \
     --enable-shared \
     --with-ensurepip=yes \

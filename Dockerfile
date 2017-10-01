@@ -21,8 +21,8 @@ RUN apt-get install -y wget \
 
 RUN apt-get install -y wget zip
 
-ENV SYSROOT=/usr/aarch64-linux-gnu
-RUN mkdir $SYSROOT
+# ENV SYSROOT=/usr/aarch64-linux-gnu
+# RUN mkdir $SYSROOT
 # RUN dpkg --add-architecture armhf
 
 # ADD deps/ /deps
@@ -51,33 +51,43 @@ RUN mkdir $SYSROOT
 #     git
 
 
-RUN wget https://developer.nvidia.com/embedded/dlc/l4t-sample-root-filesystem-28-1 -O /tmp/Tegra_Linux_Sample-Root-Filesystem_R28.1.0_aarch64.tbz2
-RUN tar -xvf /tmp/Tegra_Linux_Sample-Root-Filesystem_R28.1.0_aarch64.tbz2 -C /usr/aarch64-linux-gnu --exclude 'usr/lib/debug' --exclude 'usr/lib/libreoffice' --exclude 'usr/lib/chromium-browser' usr/lib lib usr/include
-ADD fixsymlinks.sh /fixsymlinks.sh
-RUN /fixsymlinks.sh $SYSROOT
+# RUN wget https://developer.nvidia.com/embedded/dlc/l4t-sample-root-filesystem-28-1 -O /tmp/Tegra_Linux_Sample-Root-Filesystem_R28.1.0_aarch64.tbz2
+# RUN tar -xvf /tmp/Tegra_Linux_Sample-Root-Filesystem_R28.1.0_aarch64.tbz2 -C /usr/aarch64-linux-gnu --exclude 'usr/lib/debug' --exclude 'usr/lib/libreoffice' --exclude 'usr/lib/chromium-browser' usr/lib lib usr/include
+# ADD fixsymlinks.sh /fixsymlinks.sh
+# RUN /fixsymlinks.sh $SYSROOT
 
 RUN apt-get install -y gawk
 # ADD install-make.sh /install-make.sh 
 # RUN /install-make.sh
 
 RUN mkdir /opt/gcc/
-ADD gcc-4.8.5-aarch64.tgz /opt/gcc/
+# ADD gcc-4.8.5-aarch64.tgz /opt/gcc/
 
-ADD make-aarch64-toolchain.sh /tmp/make-aarch64-toolchain.sh
+ADD make-aarch64-toolchain.sh.new /tmp/make-aarch64-toolchain.sh
 ADD make-gcc.sh /make-gcc.sh
 RUN /make-gcc.sh
+ENV PATH=$PATH:/opt/gcc/install/bin
+ENV SYSROOT=/opt/gcc/install/aarch64-linux-gnu/sysroot
+ENV TRIPLET=aarch64-linux-gnu
+ENV CROSS_COMPILE=${TRIPLET}-
+
+ADD pkg-src.list /etc/apt/sources.list.d/pkg-src.list
+RUN apt-get update
+
+ADD make-zlib-pkg.sh /make-zlib-pkg.sh
+RUN /make-zlib-pkg.sh
 
 # Cross compiling cmake toolchain
 ADD toolchain.cmake /toolchain.cmake
 
-ADD install-deb.sh /install-deb.sh
+# ADD install-deb.sh /install-deb.sh
 
 # ENV CFLAGS="-I$SYSROOT/usr/include -I$SYSROOT/include"
 # ENV CXXFLAGS="-I$SYSROOT/usr/include -I$SYSROOT/include"
 # ADD ./deps/zlib-1.2.11.tar.gz /tmp/
 # RUN tar -xf /tmp/zlib-1.2.11.tar.gz -C /tmp
-ADD make-zlib.sh /make-zlib.sh
-RUN /make-zlib.sh
+# ADD make-zlib.sh /make-zlib.sh
+# RUN /make-zlib.sh
 
 
 # Install zlib from deb
@@ -334,8 +344,15 @@ RUN wget https://download.qt.io/archive/qt/5.9/5.9.0/single/qt-everywhere-openso
 # ADD get-rootfs.sh /get-rootfs.sh
 # RUN /get-rootfs.sh
 
+RUN apt-get install pkg-config
+ENV PKG_CONFIG_DIR=
+ENV PKG_CONFIG_LIBDIR=${SYSROOT}/usr/lib/pkgconfig:${SYSROOT}/usr/share/pkgconfig
+ENV PKG_CONFIG_SYSROOT_DIR=${SYSROOT}
+ADD make-opengles.sh /make-opengles.sh
+ADD libtool.patch /libtool.patch
+RUN /make-opengles.sh
 # QT Requires ssl 1.0
-RUN rm $SYSROOT/lib/libssl.so $SYSROOT/lib/libssl.so.1.1 $SYSROOT/lib/libssl.a
+# RUN rm $SYSROOT/lib/libssl.so $SYSROOT/lib/libssl.so.1.1 $SYSROOT/lib/libssl.a
 ADD make-qt5.sh /make-qt5.sh
 RUN /make-qt5.sh
 
