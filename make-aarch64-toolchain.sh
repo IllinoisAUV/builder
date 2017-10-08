@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -ex
+set -e
 
 BUILD_TOP=`pwd`
 NCPUS=`getconf _NPROCESSORS_ONLN`
@@ -17,13 +17,15 @@ edo() {
 
 get_src() {
     # Get all the component sources
-    # edo wget http://ftpmirror.gnu.org/binutils/binutils2.24.tar.gz
-    # edo wget http://ftpmirror.gnu.org/gcc/gcc-4.8.5/gcc-4.8.5.tar.gz
-    # edo wget http://ftpmirror.gnu.org/glibc/glibc-2.17.tar.xz
-    # edo wget --no-check-certificate https://www.kernel.org/pub/linux/kernel/v3.x/linux-3.7.10.tar.xz
-    # edo wget http://ftpmirror.gnu.org/mpfr/mpfr-3.1.1.tar.xz
-    # edo wget http://ftpmirror.gnu.org/gmp/gmp-5.0.5.tar.xz
-    # edo wget http://ftpmirror.gnu.org/mpc/mpc-1.0.1.tar.gz
+    edo wget --quiet http://ftpmirror.gnu.org/binutils/binutils-2.25.tar.gz
+    edo wget --quiet http://ftpmirror.gnu.org/gcc/gcc-5.3.0/gcc-5.3.0.tar.gz
+    edo wget --quiet http://ftpmirror.gnu.org/glibc/glibc-2.17.tar.xz
+    edo wget --quiet --no-check-certificate https://www.kernel.org/pub/linux/kernel/v3.x/linux-3.7.10.tar.xz
+    edo wget --quiet http://ftpmirror.gnu.org/mpfr/mpfr-3.1.1.tar.xz
+    edo wget --quiet http://ftpmirror.gnu.org/gmp/gmp-5.0.5.tar.xz
+    edo wget --quiet http://ftpmirror.gnu.org/mpc/mpc-1.0.1.tar.gz
+    # for f in *.tar*; do edo tar xf $f; done
+
     for f in *.tar*; do 
 	echo $f | sed 's/\.tar\..*//g'
 	fbase=$(echo $f | sed 's/\.tar\..*//g')
@@ -36,22 +38,22 @@ get_src() {
 
 apply_patches() {
 	# Apply patches and set up support libraries
-	edo pushd binutils-2.24
-	for f in $BUILD_TOP/patches/binutils-2.24/*; do edo patch -p1 < $f; done
+	edo pushd binutils-2.25
+	for f in $BUILD_TOP/patches/binutils-2.25/*; do edo patch -p1 < $f; done
 	edo popd 
 
-	edo pushd gcc-4.8.5
+	edo pushd gcc-5.3.0
 	edo ln -s $BUILD_TOP/gmp-5.0.5 gmp
 	edo ln -s $BUILD_TOP/mpfr-3.1.1 mpfr
 	edo ln -s $BUILD_TOP/mpc-1.0.1 mpc
-	for f in $BUILD_TOP/patches/gcc-4.8.5/*; do edo patch -p1 < $f; done
+	for f in $BUILD_TOP/patches/gcc-5.3.0/*; do edo patch -p1 < $f; done
 	edo popd
 }
 
 set_env() {
 	# Set up envrionment variables
-	INSTALL_PATH=/usr # $BUILD_TOP/install
-	TRIPLET=aarch64-unknown-linux-gnu
+	INSTALL_PATH=$BUILD_TOP/install
+	TRIPLET=aarch64-linux-gnu
 	SYSROOT=$INSTALL_PATH/$TRIPLET/sysroot
 	PATH=$INSTALL_PATH/bin:$PATH
 }
@@ -60,10 +62,15 @@ build_binutils() {
 	# Build binutils
 	edo mkdir build-binutils
 	edo pushd build-binutils/
-	edo $BUILD_TOP/binutils-2.24/configure \
+	edo $BUILD_TOP/binutils-2.25/configure \
 		--prefix=$INSTALL_PATH \
 		--target=$TRIPLET \
 		--with-sysroot=$SYSROOT \
+		--enable-plugins \
+		--enable-gold \
+		--enable-lto \
+		--enable-shared \
+		--disable-multilib \
 		--disable-werror
 	edo make -j${NCPUS}
 	edo make install
@@ -81,13 +88,15 @@ build_gcc_stage1() {
 	# Build 1st stage gcc
 	edo mkdir build-gcc1
 	edo pushd build-gcc1
-	$BUILD_TOP/gcc-4.8.5/configure \
+	$BUILD_TOP/gcc-5.3.0/configure \
 		LDFLAGS=-static \
 		--prefix=$INSTALL_PATH \
 		--target=$TRIPLET \
 		--enable-languages=c,c++,fortran \
 		--enable-theads=posix \
 		--enable-shared \
+		--enable-lto \
+		--enable-gold \
 		--disable-libsanitizer \
 		--disable-gnu-indirect-function \
 		--disable-gnu-unique-object \
@@ -115,11 +124,10 @@ build_glibc_stage1() {
 		--disable-stackguard-randomization \
 		CC=$TRIPLET-gcc \
 		libc_cv_forced_unwind=yes
-	# edo make install-bootstrap-headers=yes install-headers
+	edo make install-bootstrap-headers=yes install-headers
 	edo make -j${NCPUS} csu/subdir_lib
 	edo install csu/crt1.o csu/crti.o csu/crtn.o $SYSROOT/usr/lib
 	edo $TRIPLET-gcc -nostdlib -nostartfiles -shared -x c /dev/null -o $SYSROOT/usr/lib/libc.so
-    edo mkdir -p $SYSROOT/usr/include/gnu
 	edo touch $SYSROOT/usr/include/gnu/stubs.h
 	edo popd
 }
@@ -128,7 +136,7 @@ build_gcc_support_lib() {
 	# Build compiler support library
 	edo mkdir build-gcc2
 	edo pushd build-gcc2
-	$BUILD_TOP/gcc-4.8.5/configure \
+	$BUILD_TOP/gcc-5.3.0/configure \
 		LDFLAGS=-static \
 		--prefix=$INSTALL_PATH \
 		--target=$TRIPLET \
@@ -169,13 +177,15 @@ build_final_gcc() {
 	# Build libstdc++
 	edo mkdir build-gcc3
 	edo pushd build-gcc3
-	$BUILD_TOP/gcc-4.8.5/configure \
+	$BUILD_TOP/gcc-5.3.0/configure \
 		LDFLAGS=-static \
 		--prefix=$INSTALL_PATH \
 		--target=$TRIPLET \
 		--enable-languages=c,c++,fortran \
 		--enable-theads=posix \
 		--enable-shared \
+		--enable-lto \
+		--enable-gold \
 		--disable-libsanitizer \
 		--disable-gnu-indirect-function \
 		--disable-gnu-unique-object \
@@ -185,16 +195,6 @@ build_final_gcc() {
 	edo make install
 	edo popd
 }
-
-
-# Glibc requires make 3.8* or 3.9*
-wget https://ftp.gnu.org/gnu/make/make-3.82.tar.gz -O /tmp/make-3.82.tar.gz
-tar -xf /tmp/make-3.82.tar.gz -C /tmp
-pushd /tmp/make-3.82
-./configure
-make -j$(nproc)
-popd
-export MAKE_PATH=/tmp/make-3.82
 
 echo "Downloading sources"
 edo get_src > get_src.log 2>&1
@@ -221,11 +221,7 @@ edo build_gcc_stage1 > build_gcc_stage1.log 2>&1
 echo "Done"
 
 echo "Build Glibc stage1"
-OLDPATH=$PATH
-export PATH=$MAKE_PATH:$PATH
 edo build_glibc_stage1 > build_glibc_stage1.log 2>&1
-export PATH=$OLDPATH
-
 echo "Done"
 
 echo "Build GCC support lib"
@@ -233,16 +229,12 @@ edo build_gcc_support_lib > build_gcc_support_lib.log 2>&1
 echo "Done"
 
 echo "Build final Glibc"
-OLDPATH=$PATH
-export PATH=$MAKE_PATH:$PATH
 edo build_final_glibc > build_final_glibc.log 2>&1
-export PATH=$OLDPATH
 echo "Done"
 
 echo "Build final GCC"
-edo build_final_gcc # > build_final_gcc.log 2>&1
+edo build_final_gcc > build_final_gcc.log 2>&1
 echo "Done"
 
 echo "Success!"
-cd /
-rm -rf /tmp/*
+

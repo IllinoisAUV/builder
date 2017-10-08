@@ -2,7 +2,7 @@
 
 set -ex
 
-wget https://www.openssl.org/source/openssl-1.0.2l.tar.gz -O /tmp/openssl-1.0.2l.tar.gz
+wget --quiet https://www.openssl.org/source/openssl-1.0.2l.tar.gz -O /tmp/openssl-1.0.2l.tar.gz
 tar -xf /tmp/openssl-1.0.2l.tar.gz -C /tmp
 cd /tmp/openssl-1.0.2l
 

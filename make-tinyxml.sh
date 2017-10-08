@@ -2,7 +2,7 @@
 
 set -ex
 
-wget https://downloads.sourceforge.net/project/tinyxml/tinyxml/2.6.2/tinyxml_2_6_2.zip -O /tmp/tinyxml_2_6_2.zip
+wget --quiet https://downloads.sourceforge.net/project/tinyxml/tinyxml/2.6.2/tinyxml_2_6_2.zip -O /tmp/tinyxml_2_6_2.zip
 unzip /tmp/tinyxml_2_6_2.zip -d /tmp
 cd /tmp/tinyxml
 

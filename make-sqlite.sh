@@ -2,7 +2,7 @@
 
 set -ex
 
-wget https://www.sqlite.org/2017/sqlite-autoconf-3200100.tar.gz -O /tmp/sqlite-autoconf-3200100.tar.gz
+wget --quiet https://www.sqlite.org/2017/sqlite-autoconf-3200100.tar.gz -O /tmp/sqlite-autoconf-3200100.tar.gz
 tar -xf /tmp/sqlite-autoconf-3200100.tar.gz -C /tmp
 cd /tmp/sqlite-autoconf-3200100
 

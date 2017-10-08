@@ -51,31 +51,30 @@ RUN apt-get install -y wget zip
 #     git
 
 
-# RUN wget https://developer.nvidia.com/embedded/dlc/l4t-sample-root-filesystem-28-1 -O /tmp/Tegra_Linux_Sample-Root-Filesystem_R28.1.0_aarch64.tbz2
+# RUN wget --quiet https://developer.nvidia.com/embedded/dlc/l4t-sample-root-filesystem-28-1 -O /tmp/Tegra_Linux_Sample-Root-Filesystem_R28.1.0_aarch64.tbz2
 # RUN tar -xvf /tmp/Tegra_Linux_Sample-Root-Filesystem_R28.1.0_aarch64.tbz2 -C /usr/aarch64-linux-gnu --exclude 'usr/lib/debug' --exclude 'usr/lib/libreoffice' --exclude 'usr/lib/chromium-browser' usr/lib lib usr/include
 # ADD fixsymlinks.sh /fixsymlinks.sh
 # RUN /fixsymlinks.sh $SYSROOT
 
-RUN apt-get install -y gawk
+RUN apt-get install -y gawk bison flex texinfo
 # ADD install-make.sh /install-make.sh 
 # RUN /install-make.sh
 
 RUN mkdir /opt/gcc/
 # ADD gcc-4.8.5-aarch64.tgz /opt/gcc/
 
-ADD make-aarch64-toolchain.sh.new /tmp/make-aarch64-toolchain.sh
+ADD make-make.sh /make-make.sh
+RUN /make-make.sh
+ADD make-aarch64-toolchain.sh /tmp/make-aarch64-toolchain.sh
 ADD make-gcc.sh /make-gcc.sh
 RUN /make-gcc.sh
-ENV PATH=$PATH:/opt/gcc/install/bin
+ENV PATH=/opt/gcc/install/bin:$PATH
 ENV SYSROOT=/opt/gcc/install/aarch64-linux-gnu/sysroot
 ENV TRIPLET=aarch64-linux-gnu
 ENV CROSS_COMPILE=${TRIPLET}-
 
-ADD pkg-src.list /etc/apt/sources.list.d/pkg-src.list
-RUN apt-get update
-
-ADD make-zlib-pkg.sh /make-zlib-pkg.sh
-RUN /make-zlib-pkg.sh
+ADD make-zlib.sh /make-zlib.sh
+RUN /make-zlib.sh
 
 # Cross compiling cmake toolchain
 ADD toolchain.cmake /toolchain.cmake
@@ -256,27 +255,6 @@ RUN /make-lz4.sh
 
 # ADD fix-links2.sh /fix-links.sh
 # RUN /fix-links.sh
-
-# Build and install ROS
-RUN rosdep init
-RUN rosdep update
-RUN mkdir /ros_catkin_ws
-# List dependencies here
-RUN cd /ros_catkin_ws && rosinstall_generator ros_comm sensor_msgs geometry_msgs nav_msgs mavros_msgs visualization_msgs tf2 catkin --rosdistro kinetic --deps --wet-only --tar > kinetic-ros_comm-wet.rosinstall
-RUN cd /ros_catkin_ws && wstool init -j4 src kinetic-ros_comm-wet.rosinstall
-
-ADD toolchain-python.cmake /toolchain.cmake
-ADD libpthread.so $SYSROOT/usr/lib/aarch64-linux-gnu/libpthread.so
-
-# ENV LD_LIBRARY_PATH=$SYSROOT/lib/aarch64-linux-gnu/
-# RUN echo $LD_LIBRARY_PATH
-
-RUN cd /ros_catkin_ws && ./src/catkin/bin/catkin_make_isolated --install --install-space /opt/ros/kinetic -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=/toolchain.cmake -DCATKIN_ENABLE_TESTING=OFF -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON
-
-# Source ROS setup files
-RUN echo "source /opt/ros/kinetic/setup.bash" >> ~/.bashrc
-
-
 # Install OpenCV4Tegra
 # ADD deps/libopencv4tegra-repo_2.4.12.3_armhf_l4t-r23.deb /downloads/
 # RUN wget -O /tmp/libopencv4tegra.deb http://developer.download.nvidia.com/embedded/L4T/r23_Release_v1.0/libopencv4tegra-repo_2.4.12.3_armhf_l4t-r23.deb
@@ -332,7 +310,7 @@ RUN /install-cuda.sh
 # RUN apt-get install -y libgles2-mesa-dev "^libxcb.*" libx11-xcb-dev libglu1-mesa-dev libxrender-dev libxi-dev libinput* mtdev*
 
 # Setup sysroot
-RUN wget https://download.qt.io/archive/qt/5.9/5.9.0/single/qt-everywhere-opensource-src-5.9.0.tar.xz -O /tmp/qt-everywhere-opensource-src-5.9.0.tar.xz && tar -xf /tmp/qt-everywhere-opensource-src-5.9.0.tar.xz -C /tmp
+# RUN wget --quiet https://download.qt.io/archive/qt/5.9/5.9.0/single/qt-everywhere-opensource-src-5.9.0.tar.xz -O /tmp/qt-everywhere-opensource-src-5.9.0.tar.xz && tar -xf /tmp/qt-everywhere-opensource-src-5.9.0.tar.xz -C /tmp
 
 # RUN dpkg --root $SYSROOT --add-architecture armhf
 # RUN dpkg --root $SYSROOT --add-architecture arm64
@@ -344,17 +322,71 @@ RUN wget https://download.qt.io/archive/qt/5.9/5.9.0/single/qt-everywhere-openso
 # ADD get-rootfs.sh /get-rootfs.sh
 # RUN /get-rootfs.sh
 
+
+ADD sources.list /etc/apt/sources.list
+RUN apt-get update
+
+
 RUN apt-get install pkg-config
 ENV PKG_CONFIG_DIR=
 ENV PKG_CONFIG_LIBDIR=${SYSROOT}/usr/lib/pkgconfig:${SYSROOT}/usr/share/pkgconfig
 ENV PKG_CONFIG_SYSROOT_DIR=${SYSROOT}
-ADD make-opengles.sh /make-opengles.sh
+# ADD jhbuildrc /root/.jhbuildrc
+# ADD make-xorg.sh /make-xorg.sh
+# RUN /make-xorg.sh
 ADD libtool.patch /libtool.patch
+ADD make-opengles-deps.sh /make-opengles-deps.sh
+RUN /make-opengles-deps.sh
+ADD make-drivers.sh /make-drivers.sh
+RUN /make-drivers.sh
+ADD make-opengles.sh /make-opengles.sh
 RUN /make-opengles.sh
 # QT Requires ssl 1.0
 # RUN rm $SYSROOT/lib/libssl.so $SYSROOT/lib/libssl.so.1.1 $SYSROOT/lib/libssl.a
+
 ADD make-qt5.sh /make-qt5.sh
 RUN /make-qt5.sh
+
+ADD make-libpng.sh /make-libpng.sh
+RUN /make-libpng.sh
+
+
+
+
+ADD make-numpy.sh /make-numpy.sh
+RUN /make-numpy.sh
+
+ADD make-ogg.sh /make-ogg.sh
+RUN /make-ogg.sh
+
+# Build and install ROS
+RUN rosdep init
+RUN rosdep update
+# RUN mkdir /ros_catkin_ws
+# List dependencies here
+# RUN cd /ros_catkin_ws && rosinstall_generator ros_comm sensor_msgs geometry_msgs nav_msgs mavros_msgs visualization_msgs tf2 catkin --rosdistro kinetic --deps --wet-only --tar > kinetic-ros_comm-wet.rosinstall
+# RUN cd /ros_catkin_ws && wstool init -j4 src kinetic-ros_comm-wet.rosinstall
+RUN mkdir /ros_catkin_ws && cd /ros_catkin_ws && rosinstall_generator catkin --rosdistro kinetic --deps --wet-only --tar > kinetic-catkin-wet.rosinstall && wstool init -j$(nproc) /ros_catkin_ws/src kinetic-catkin-wet.rosinstall
+
+# ADD libpthread.so $SYSROOT/usr/lib/aarch64-linux-gnu/libpthread.so
+
+# ENV LD_LIBRARY_PATH=$SYSROOT/lib/aarch64-linux-gnu/
+# RUN echo $LD_LIBRARY_PATH
+
+# RUN cd /ros_catkin_ws && ./src/catkin/bin/catkin_make_isolated --install --install-space /opt/ros/kinetic -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=/toolchain.cmake -DCATKIN_ENABLE_TESTING=OFF -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON
+
+# ADD make-ros.sh /make-ros.sh
+# RUN /make-ros.sh
+
+# Source ROS setup files
+RUN echo "source /opt/ros/kinetic/setup.bash" >> ~/.bashrc
+
+
+# ADD make-opencv3.sh /make-opencv3.sh
+# RUN /make-opencv3.sh
+
+ADD make-libtheora.sh /make-libtheora.sh
+RUN /make-libtheora.sh
 
 ADD install-ros-cv-bridge.sh /install-ros-cv-bridge.sh
 RUN /install-ros-cv-bridge.sh
