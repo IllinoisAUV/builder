@@ -1,5 +1,5 @@
 #!/bin/bash
-set -xe
+set -e
 
 
 wget --quiet https://github.com/ros/urdfdom/archive/1.0.0.tar.gz -O /tmp/1.0.0.tar.gz

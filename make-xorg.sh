@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -xe
+set -e
 
 apt-get install -y jhbuild sudo meson
 cd /tmp

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -xe
+set -e
 
 wget --quiet https://dri.freedesktop.org/libdrm/libdrm-2.4.83.tar.gz -O /tmp/libdrm-2.4.83.tar.gz
 tar -xf /tmp/libdrm-2.4.83.tar.gz -C /tmp

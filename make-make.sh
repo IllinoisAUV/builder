@@ -1,5 +1,5 @@
 #!/bin/bash
-set -xe
+set -e
 
 
 # Glibc requires make 3.8* or 3.9*

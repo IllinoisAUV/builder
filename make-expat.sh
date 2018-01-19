@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -ex
+set -e
 
 wget --quiet https://github.com/libexpat/libexpat/archive/R_2_2_4.tar.gz -O /tmp/libexpat-R_2_2_4.tar.gz
 tar -xf /tmp/libexpat-R_2_2_4.tar.gz -C /tmp

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -xe
+set -e
 
 
 wget --quiet https://github.com/lz4/lz4/archive/v1.8.0.tar.gz -O /tmp/v1.8.0.tar.gz

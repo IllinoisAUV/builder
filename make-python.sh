@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -ex
+set -e
 
 wget --quiet https://www.python.org/ftp/python/2.7.13/Python-2.7.13.tgz -O /tmp/Python-2.7.13.tgz
 tar -xf /tmp/Python-2.7.13.tgz -C /tmp

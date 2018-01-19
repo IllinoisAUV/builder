@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -ex
+set -e
 
 wget --quiet https://www.openssl.org/source/openssl-1.0.2l.tar.gz -O /tmp/openssl-1.0.2l.tar.gz
 tar -xf /tmp/openssl-1.0.2l.tar.gz -C /tmp
@@ -15,7 +15,7 @@ export CROSS_COMPILE=$TRIPLET-
          linux-aarch64
 
 
-make
+make -j$(nproc)
 make install_sw
 
 cd /

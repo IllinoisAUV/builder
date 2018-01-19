@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -xe
+set -e
 
 cd /tmp
 wget http://downloads.xiph.org/releases/theora/libtheora-1.1.1.tar.bz2 -O /tmp/libtheora-1.1.1.tar.bz2

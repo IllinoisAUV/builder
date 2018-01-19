@@ -1,5 +1,5 @@
 #!/bin/bash
-set -xe
+set -e
 
 wget --quiet https://github.com/leethomason/tinyxml2/archive/6.0.0.tar.gz -O /tmp/6.0.0.tar.gz
 tar -xf /tmp/6.0.0.tar.gz -C /tmp

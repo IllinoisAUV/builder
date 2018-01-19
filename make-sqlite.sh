@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -ex
+set -e
 
 wget --quiet https://www.sqlite.org/2017/sqlite-autoconf-3200100.tar.gz -O /tmp/sqlite-autoconf-3200100.tar.gz
 tar -xf /tmp/sqlite-autoconf-3200100.tar.gz -C /tmp
@@ -11,9 +11,9 @@ export CROSS_COMPILE=$TRIPLET-
     --build=$MACHTYPE \
     --host=$TRIPLET \
     --prefix=$SYSROOT/usr \
-    --enable-shared \
+    --enable-shared
 
-make
+make -j$(nproc)
 make install
 
 cd /

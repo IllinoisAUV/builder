@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -xe
+set -e
 
 
 wget --quiet https://download.qt.io/archive/qt/5.9/5.9.0/single/qt-everywhere-opensource-src-5.9.0.tar.xz -O /tmp/qt-everywhere-opensource-src-5.9.0.tar.xz

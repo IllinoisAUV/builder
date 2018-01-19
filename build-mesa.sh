@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -xe
+set -e
 
 wget --quiet https://mesa.freedesktop.org/archive/17.0.0/mesa-17.0.0.tar.xz -O /tmp/mesa-17.0.0.tar.xz
 tar -xf https://mesa.freedesktop.org/archive/17.0.0/mesa-17.0.0.tar.xz -C /tmp

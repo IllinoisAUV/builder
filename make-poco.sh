@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -xe
+set -e
 
 wget --quiet https://pocoproject.org/releases/poco-1.7.8/poco-1.7.8p3.tar.gz -O /tmp/poco-1.7.8p3.tar.gz
 tar -xf /tmp/poco-1.7.8p3.tar.gz -C /tmp

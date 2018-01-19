@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -xe
+set -e
 
 wget --quiet https://sourceforge.net/projects/geographiclib/files/distrib/GeographicLib-1.49.tar.gz -O /tmp/GeographicLib-1.49.tar.gz
 tar -xf /tmp/GeographicLib-1.49.tar.gz -C /tmp

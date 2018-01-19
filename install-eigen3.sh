@@ -1,5 +1,5 @@
 #!/bin/bash
-set -xe
+set -e
 
 wget --quiet http://bitbucket.org/eigen/eigen/get/3.3.4.tar.bz2 -O /tmp/3.3.4.tar.bz2
 tar -xf /tmp/3.3.4.tar.bz2 -C /tmp

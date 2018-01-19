@@ -1,4 +1,5 @@
 #!/bin/sh
+set -e
 
 wget --quiet https://zlib.net/zlib-1.2.11.tar.gz -O /tmp/zlib-1.2.11.tar.gz
 tar -xf /tmp/zlib-1.2.11.tar.gz -C /tmp
@@ -10,7 +11,7 @@ export LD=${TRIPLET}-ld
 export AS=${TRIPLET}-as
 ./configure --prefix=$SYSROOT/usr
 
-make
+make -j$(nproc)
 make install
 
 cd /

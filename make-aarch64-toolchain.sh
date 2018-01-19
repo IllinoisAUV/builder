@@ -17,7 +17,7 @@ edo() {
 
 get_src() {
     # Get all the component sources
-    edo wget --quiet http://ftpmirror.gnu.org/binutils/binutils-2.25.tar.gz
+    edo wget --quiet http://ftpmirror.gnu.org/binutils/binutils-2.24.tar.gz
     edo wget --quiet http://ftpmirror.gnu.org/gcc/gcc-5.3.0/gcc-5.3.0.tar.gz
     edo wget --quiet http://ftpmirror.gnu.org/glibc/glibc-2.17.tar.xz
     edo wget --quiet --no-check-certificate https://www.kernel.org/pub/linux/kernel/v3.x/linux-3.7.10.tar.xz
@@ -38,8 +38,8 @@ get_src() {
 
 apply_patches() {
 	# Apply patches and set up support libraries
-	edo pushd binutils-2.25
-	for f in $BUILD_TOP/patches/binutils-2.25/*; do edo patch -p1 < $f; done
+	edo pushd binutils-2.24
+	for f in $BUILD_TOP/patches/binutils-2.24/*; do edo patch -p1 < $f; done
 	edo popd 
 
 	edo pushd gcc-5.3.0
@@ -62,7 +62,7 @@ build_binutils() {
 	# Build binutils
 	edo mkdir build-binutils
 	edo pushd build-binutils/
-	edo $BUILD_TOP/binutils-2.25/configure \
+	edo $BUILD_TOP/binutils-2.24/configure \
 		--prefix=$INSTALL_PATH \
 		--target=$TRIPLET \
 		--with-sysroot=$SYSROOT \

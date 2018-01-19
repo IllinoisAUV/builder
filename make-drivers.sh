@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -xe
+set -e
 
 wget --quiet https://developer.nvidia.com/embedded/dlc/l4t-jetson-tx1-driver-package-28-1 -O /tmp/Linux_for_Tegra.tar.bz2
 tar -xf /tmp/Linux_for_Tegra.tar.bz2 -C /tmp

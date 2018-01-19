@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -xe
+set -e
 
 wget --quiet http://www.bzip.org/1.0.6/bzip2-1.0.6.tar.gz -O /tmp/bzip2-1.0.6.tar.gz
 tar -xf /tmp/bzip2-1.0.6.tar.gz -C /tmp

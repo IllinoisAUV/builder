@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -xe
+set -e
 
 mkdir /ros_catkin_ws 
 cd /ros_catkin_ws 

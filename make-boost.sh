@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -xe
+set -e
 
 wget --quiet http://sourceforge.net/projects/boost/files/boost/1.58.0/boost_1_58_0.tar.bz2 -O /tmp/boost_1_58_0.tar.bz2
 tar -xf /tmp/boost_1_58_0.tar.bz2 -C /tmp

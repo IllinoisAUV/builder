@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -xe 
+set -e 
 
 wget --quiet http://downloads.xiph.org/releases/ogg/libogg-1.3.2.tar.gz -O /tmp/libogg-1.3.2.tar.gz
 tar -xf /tmp/libogg-1.3.2.tar.gz -C /tmp

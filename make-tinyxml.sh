@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -ex
+set -e
 
 wget --quiet https://downloads.sourceforge.net/project/tinyxml/tinyxml/2.6.2/tinyxml_2_6_2.zip -O /tmp/tinyxml_2_6_2.zip
 unzip /tmp/tinyxml_2_6_2.zip -d /tmp
@@ -23,7 +23,7 @@ sed -i "s/TINYXML_USE_STL := NO/TINYXML_USE_STL := YES/g" Makefile
 
 patch tinyxml.h /enforce-use-stl.patch
 
-make
+make -j$(nproc)
 $CXX -shared -olibtinyxml.so.0.1 -Wl,-soname,libtinyxml.so.0 $(ls *.o | grep -v xmltest)
 
 mv libtinyxml.so.0.1 $SYSROOT/usr/lib

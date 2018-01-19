@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -xe
+set -e
 
 
 # mkdir /mavros_catkin_ws && cd /mavros_catkin_ws && rosinstall_generator catkin --rosdistro kinetic --deps --wet-only --tar > kinetic-catkin-wet.rosinstall && wstool init -j$(nproc) /mavros_catkin_ws/src kinetic-catkin-wet.rosinstall

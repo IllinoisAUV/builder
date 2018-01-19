@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -xe
+set -e
 
 wget --quiet https://github.com/ros/urdfdom_headers/archive/1.0.0.tar.gz -O /tmp/1.0.0.tar.gz
 tar -xf /tmp/1.0.0.tar.gz -C /tmp
