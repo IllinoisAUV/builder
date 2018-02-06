@@ -37,6 +37,27 @@ RUN /get-debs.py ros-kinetic-desktop-full > /tmp/packages
 RUN cd /tmp && cat /tmp/packages | xargs apt-get download
 RUN ls /tmp/*.deb | xargs --max-procs $(nproc) -I pkg -n1 dpkg-deb -x pkg /sysroot
 
+RUN apt-get install -y gawk bison flex texinfo build-essential
+
+RUN mkdir /opt/gcc/
+
+ENV SYSROOT=/sysroot
+
+
+ADD make-make.sh /make-make.sh
+RUN /make-make.sh
+
+RUN mkdir -p /cross
+RUN mv /sysroot /cross
+ENV INSTALL_PATH=/cross
+
+ADD make-aarch64-toolchain.sh /tmp/make-aarch64-toolchain.sh
+ADD make-gcc.sh /make-gcc.sh
+RUN /make-gcc.sh
+ENV PATH=/opt/gcc/install/bin:$PATH
+ENV TRIPLET=aarch64-linux-gnu
+ENV CROSS_COMPILE=${TRIPLET}-
+
 # ADD get-debs.sh /get-debs.sh
 # RUN /get-debs.sh
 
