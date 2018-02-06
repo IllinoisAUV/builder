@@ -29,13 +29,6 @@ RUN sh -c 'echo "deb http://packages.ros.org/ros/ubuntu xenial main" > /etc/apt/
 RUN apt-key adv --keyserver hkp://ha.pool.sks-keyservers.net:80 --recv-key 421C365BD9FF1F717815A3895523BAEEB01FA116
 
 RUN apt-get update
-RUN apt-get install -y apt-rdepends
-RUN apt-get install -y python
-RUN apt-get install -y python-apt
-ADD get-debs.py /get-debs.py
-RUN /get-debs.py ros-kinetic-desktop-full > /tmp/packages
-RUN cd /tmp && cat /tmp/packages | xargs apt-get download
-RUN ls /tmp/*.deb | xargs --max-procs $(nproc) -I pkg -n1 dpkg-deb -x pkg /sysroot
 
 RUN apt-get install -y gawk bison flex texinfo build-essential
 
@@ -58,14 +51,25 @@ ENV PATH=/opt/gcc/install/bin:$PATH
 ENV TRIPLET=aarch64-linux-gnu
 ENV CROSS_COMPILE=${TRIPLET}-
 
-# ADD get-debs.sh /get-debs.sh
-# RUN /get-debs.sh
+RUN apt-get install -y python-catkin-tools
+ADD toolchain.cmake /toolchain.cmake
 
-# RUN apt-get download $(apt-rdepends ros-kinetic-desktop-full:arm64 | grep -v "^ ") /tmp
+RUN echo "source $SYSROOT/opt/ros/kinetic/setup.bash" >> /.bashrc
 
-# Source ROS setup files
-# RUN echo "source /opt/ros/kinetic/setup.bash" >> /.bashrc
+RUN apt-get install -y apt-rdepends
+RUN apt-get install -y python
+RUN apt-get install -y python-apt
+ADD get-debs.py /get-debs.py
+RUN /get-debs.py ros-kinetic-desktop-full > /tmp/packages-all
+RUN cd /tmp && cat /tmp/packages-all | xargs apt-get download
+RUN ls /tmp/*.deb | xargs --max-procs $(nproc) -I pkg -n1 dpkg-deb -x pkg /sysroot
+
+RUN /get-debs.py ros-kinetic-mavros > /tmp/packages-mavros
+# comm -13 <(sort file1) <(sort file2) returns all of the lines in file2 not in file1
+RUN mkdir -p /tmp/mavros && cd /tmp/mavros && comm -13 <(sort /tmp/packages-all) <(sort /tmp/packages-mavros) | xargs apt-get download
+RUN ls /tmp/*.deb | xargs --max-procs $(nproc) -I pkg -n1 dpkg-deb -x pkg /sysroot
+RUN cat /tmp/packages-all /tmp/packages-mavros | uniq > /tmp/packages-all
 
 WORKDIR /catkin_ws
 VOLUME ["/catkin_ws"]
-CMD ["bash", "-i", "-c", "catkin_make -j4 -DCMAKE_TOOLCHAIN_FILE=/toolchain.cmake -DCMAKE_BUILD_TYPE=Release"]
+CMD ["bash", "-i", "-c", "catkin_make -j$(nproc) -DCMAKE_TOOLCHAIN_FILE=/toolchain.cmake -DCMAKE_BUILD_TYPE=Release"]
