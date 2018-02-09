@@ -33,10 +33,12 @@ RUN apt-key adv --keyserver hkp://ha.pool.sks-keyservers.net:80 --recv-key 421C3
 
 RUN apt-get update
 
-RUN apt-get install -y gawk bison flex texinfo build-essential
 
-ADD make-make.sh /make-make.sh
-RUN /make-make.sh
+RUN apt-get install -y gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
+# RUN apt-get install -y gawk bison flex texinfo build-essential
+
+# ADD make-make.sh /make-make.sh
+# RUN /make-make.sh
 
 ENV INSTALL_PATH=/cross
 
@@ -55,15 +57,20 @@ RUN apt-get install -y apt-rdepends
 RUN apt-get install -y python
 RUN apt-get install -y python-apt
 ADD get-debs.py /get-debs.py
-RUN /get-debs.py ros-kinetic-desktop-full > /tmp/packages-all
-RUN cd /tmp && cat /tmp/packages-all | xargs apt-get download
-RUN ls /tmp/*.deb | xargs --max-procs $(nproc) -I pkg -n1 dpkg-deb -x pkg $SYSROOT && rm /tmp/*.deb
 
-RUN /get-debs.py ros-kinetic-mavros > /tmp/packages-mavros
-# comm -13 <(sort file1) <(sort file2) returns all of the lines in file2 not in file1
-RUN bash -c "cd /tmp/ && comm -13 <(sort /tmp/packages-all) <(sort /tmp/packages-mavros) | xargs apt-get download"
-RUN ls /tmp/*.deb | xargs --max-procs $(nproc) -I pkg -n1 dpkg-deb -x pkg $SYSROOT && rm /tmp/*.deb
-RUN cat /tmp/packages-all /tmp/packages-mavros | uniq > /tmp/packages-all
+RUN touch /tmp/packages-all
+ADD install-package.sh /install-package.sh
+RUN /install-package.sh ros-kinetic-ros-base
+RUN /install-package.sh ros-kinetic-mavros
+# RUN /get-debs.py ros-kinetic-ros-base > /tmp/packages-all
+# RUN cd /tmp && cat /tmp/packages-all | xargs apt-get download
+# RUN ls /tmp/*.deb | xargs --max-procs $(nproc) -I pkg -n1 dpkg-deb -x pkg $SYSROOT && rm /tmp/*.deb
+# 
+# RUN /get-debs.py ros-kinetic-mavros > /tmp/packages-mavros
+# # comm -13 <(sort file1) <(sort file2) returns all of the lines in file2 not in file1
+# RUN bash -c "cd /tmp/ && comm -13 <(sort /tmp/packages-all) <(sort /tmp/packages-mavros) | xargs apt-get download"
+# RUN ls /tmp/*.deb | xargs --max-procs $(nproc) -I pkg -n1 dpkg-deb -x pkg $SYSROOT && rm /tmp/*.deb
+# RUN cat /tmp/packages-all /tmp/packages-mavros | uniq > /tmp/packages-all
 
 RUN apt-get install -y cmake
 ENV PATH=/cross/bin:$PATH
@@ -102,10 +109,9 @@ RUN find /cross/sysroot/opt/ros/kinetic/share/ -name "*Config.cmake" | xargs sed
 
 RUN find /cross/sysroot/opt/ros/kinetic/share/ -name "*Config.cmake" | xargs sed -i '/elseif(IS_ABSOLUTE \${library})/{ N; s/elseif(IS_ABSOLUTE \${library})\n\(.*\)list(APPEND \(.*\)_LIBRARIES ${library})/elseif(IS_ABSOLUTE \${library})\n\1list(APPEND \2_LIBRARIES $ENV{SYSROOT}${library})/ }'
 
-RUN apt-get install -y gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
-
 RUN cd $SYSROOT/usr/lib/aarch64-linux-gnu && ln -s mesa/libGL.so.1 .
 
+RUN cd $SYSROOT && rm -rf proc root run sbin bin sys tmp var etc home dev boot usr/bin usr/sbin
 
 WORKDIR /catkin_ws
 VOLUME ["/catkin_ws"]
