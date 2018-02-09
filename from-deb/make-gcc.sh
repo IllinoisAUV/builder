@@ -7,7 +7,7 @@ mkdir -p /tmp/gcc
 # tar -xf /tmp/gcc-4.8.5-aarch64.tgz -C /opt/gcc
 
 
-cd /opt/gcc
+cd /tmp/gcc
 mv /tmp/make-aarch64-toolchain.sh .
 # cat make-aarch64-toolchain.sh
 

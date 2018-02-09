@@ -71,7 +71,8 @@ build_binutils() {
 		--enable-lto \
 		--enable-shared \
 		--disable-multilib \
-		--disable-werror
+		--disable-werror \
+		--enable-multiarch
 	edo make -j${NCPUS}
 	edo make install
 	edo popd
@@ -101,6 +102,7 @@ build_gcc_stage1() {
 		--disable-gnu-indirect-function \
 		--disable-gnu-unique-object \
 		--disable-multilib \
+		--enable-multiarch \
 		--with-sysroot=$SYSROOT
 	edo make -j${NCPUS} all-gcc LIMITS_H_TEST=true
 	edo make install-gcc
@@ -122,6 +124,7 @@ build_glibc_stage1() {
 		--with-tls \
 		--disable-nscd \
 		--disable-stackguard-randomization \
+		--enable-multiarch \
 		CC=$TRIPLET-gcc \
 		libc_cv_forced_unwind=yes
 	edo make install-bootstrap-headers=yes install-headers
@@ -147,6 +150,7 @@ build_gcc_support_lib() {
 		--disable-gnu-indirect-function \
 		--disable-gnu-unique-object \
 		--disable-multilib \
+		--enable-multiarch \
 		--with-sysroot=$SYSROOT
 	edo make -j${NCPUS} all-target-libgcc
 	edo make install-target-libgcc
@@ -167,6 +171,7 @@ build_final_glibc() {
 		--with-tls \
 		--disable-nscd \
 		--disable-stackguard-randomization \
+		--enable-multiarch \
 		CC=$TRIPLET-gcc
 	edo make -j${NCPUS}
 	edo make install install_root=$SYSROOT
@@ -190,6 +195,7 @@ build_final_gcc() {
 		--disable-gnu-indirect-function \
 		--disable-gnu-unique-object \
 		--disable-multilib \
+		--enable-multiarch \
 		--with-sysroot=$SYSROOT
 	edo make -j${NCPUS}
 	edo make install
